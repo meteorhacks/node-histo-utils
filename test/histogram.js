@@ -81,4 +81,43 @@ suite('Histogram', function() {
       assert.equal(h._getBinSize(soretedPoints), 6);
     });
   });
+
+  suite('.build', function() {
+    test('basic data set (sorted)', function() {
+      var h = new Histogram();
+      var points = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      h.addPoints(points);
+      var builtHistogram = h.build();
+      assert.deepEqual(builtHistogram, {
+        bins: [[1, 5], [6, 5]],
+        binSize: 5
+      });
+    });
+
+    test('basic data set (unsorted)', function() {
+      var h = new Histogram();
+      var points = [1, 2, 3, 4, 5, 6, 7,8, 9, 10].sort(function() {
+        return Math.random() > 0.5 ? 1 : -1;
+      });
+      h.addPoints(points);
+      var builtHistogram = h.build();
+      assert.deepEqual(builtHistogram, {
+        bins: [[1, 5], [6, 5]],
+        binSize: 5
+      });
+    });
+
+    test('data set with some outliers', function() {
+      var h = new Histogram();
+      var points = [0.00001, 1, 2, 3, 4, 5, 6, 7,8, 9, 10, 9999999].sort(function() {
+        return Math.random() > 0.5 ? 1 : -1;
+      });
+      h.addPoints(points);
+      var builtHistogram = h.build();
+      assert.deepEqual(builtHistogram, {
+        bins: [[0, 6], [6, 5], [9999999, 1]],
+        binSize: 6
+      });
+    });
+  });
 });

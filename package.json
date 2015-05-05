@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A set of utilities to create, merge and manage histograms",
   "repository": "https://github.com/meteorhacks/histo-utils",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha"
   },

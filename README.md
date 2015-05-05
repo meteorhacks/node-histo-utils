@@ -47,7 +47,7 @@ Currently, percentile is the starting point of the bin. But, we can improve this
 
 ~~~js
 var histogram = { 
-    bins: [ [ 10, 3 ], [20, 4], [ 40, 2 ], [80, 2], [99999, 1] ], 
+    bins: [ [ 10, 30 ], [20, 40], [ 40, 20 ], [80, 20], [99999, 1] ], 
     binSize: 24 
 };
 

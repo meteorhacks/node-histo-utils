@@ -1,48 +1,84 @@
-var HistoUtils = require('../lib/index');
+var Histogram = require('../lib/histogram');
 var assert = require('assert');
 
-suite('HistoUtils.create', function() {
-  test('create a histogram');
-  test('create and build histogram');
-  test('automatically decide the bin size');
-});
+suite('Histogram', function() {
+  suite('._getPercentile', function() {
+    test('get percentile with direct index', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getPercentile(soretedPoints, 30), 3);
+    });
 
-suite('HistoUtils.merge', function() {
-  test('merge histograms with same bins', function() {
-    var a = [[100, 200], [200, 400], [300, 500]];
-    var b = [[100, 5500], [200, 300], [300, 100]];
-    var expected = [[100, 5700], [200, 700], [300, 600]];
+    test('get percentile with not direct index', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getPercentile(soretedPoints, 25), 2.5);
+    });
 
-    var merged = HistoUtils.merge([a, b]);
-    assert.deepEqual(merged, expected);
-  }); 
+    test('get percentile with not direct index (but non full numbers)', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getPercentile(soretedPoints, 33), 3.5);
+    });
 
-  test('merge histograms with different bins', function() {
-    var a = [[100, 200], [200, 400], [300, 500]];
-    var b = [[100, 5500], [500, 344], [900, 844]];
-    var expected = [[100, 5700], [200, 400], [300, 500], [500, 344], [900, 844]];
+    test('get the maximum percentile', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getPercentile(soretedPoints, 100), 10);
+    });
 
-    var merged = HistoUtils.merge([a, b]);
-    assert.deepEqual(merged, expected);
-  }); 
-
-  test("merge histograms with multiple bin sizes");
-});
-
-suite('HistoUtils.getPercentiles', function() {
-  test('get one percentile', function() {
-    var histogram = [[100, 200], [200, 400], [100, 200]];
-    var percentiles = HistoUtils.getPercentiles(histogram, [50]);
-    assert.deepEqual(percentiles, {"50": 200});
+    test('get the minimum percentile', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getPercentile(soretedPoints, 1), 1);
+    });
   });
 
-  test('get multiple percentile', function() {
-    var histogram = [[100, 10], [200, 80], [300, 8], [400, 2]];
-    var percentiles = HistoUtils.getPercentiles(histogram, [50, 95, 99]);
-    assert.deepEqual(percentiles, {
-      "50": 200,
-      "95": 300,
-      "99": 400
+  suite('._getBinSize', function() {
+    test('normal data set', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10];
+      assert.equal(h._getBinSize(soretedPoints), 5);
+    });
+
+    test('data set of 500', function() {
+      var h = new Histogram();
+      var soretedPoints = [];
+      for(var lc=1; lc<=500; lc++) {
+        soretedPoints.push(lc);
+      }
+      assert.equal(h._getBinSize(soretedPoints), 63);
+    });
+
+    test('a huge data set', function() {
+      var h = new Histogram();
+      var soretedPoints = [];
+      for(var lc=1; lc<=100000; lc++) {
+        soretedPoints.push(lc);
+      }
+      assert.equal(h._getBinSize(soretedPoints), 2155);
+    });
+
+    test('a huge data set, but similar data', function() {
+      var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      var h = new Histogram();
+      var points = [];
+      for(var lc=1; lc<=100000; lc++) {
+        var point = lc % 10;
+        points.push(data[point]);
+      }
+
+      var soretedPoints = points.sort(function(a, b) {
+        return a - b;
+      });
+
+      assert.equal(h._getBinSize(soretedPoints), 1);
+    });
+
+    test('with some outliers', function() {
+      var h = new Histogram();
+      var soretedPoints = [1, 2, 3, 4, 5, 6, 7,8, 9, 10, 10000];
+      assert.equal(h._getBinSize(soretedPoints), 6);
     });
   });
 });

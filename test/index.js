@@ -21,12 +21,12 @@ suite('HistoUtils.merge', function() {
       binSize: 100
     };
     var b = {
-      bins: [[100, 5500], [200, 300], [300, 100]],
+      bins: [[100, 400], [200, 300], [300, 100]],
       binSize: 100
     };
     var expected = {
-      bins: [[100, 5700], [200, 700], [300, 600]],
-      binSize: 100
+      bins: [[150, 600], [250, 700], [350, 600]],
+      binSize: 33
     };
 
     var merged = HistoUtils.merge([a, b]);
@@ -39,19 +39,63 @@ suite('HistoUtils.merge', function() {
       binSize: 100
     };
     var b = {
-      bins: [[100, 5500], [500, 344], [900, 844]],
+      bins: [[100, 400], [500, 344], [900, 844]],
       binSize: 100
     };
     var expected = {
-      bins: [[100, 5700], [200, 400], [300, 500], [500, 344], [900, 844]],
-      binSize: 100
+      bins: [[150, 1000], [350, 500], [550, 344], [950, 844]],
+      binSize: 101
     };
 
     var merged = HistoUtils.merge([a, b]);
     assert.deepEqual(merged, expected);
   }); 
 
-  test("merge histograms with multiple bin sizes");
+  test("merge bins temporarly", function() {
+    var a = {
+      bins: [[100, 200], [200, 400], [300, 500]],
+      binSize: 10
+    };
+    var b = {
+      bins: [[100, 5500], [200, 300], [300, 100]],
+      binSize: 100
+    };
+    var expectedBins = {
+      bins: [ 
+        [ 105, 200 ],
+        [ 150, 5500 ],
+        [ 205, 400 ],
+        [ 250, 300 ],
+        [ 305, 500 ],
+        [ 350, 100 ] 
+      ],
+      count: 7000
+    };
+
+    var mergedBins = HistoUtils._mergeBins([a, b]);
+    assert.deepEqual(mergedBins, expectedBins);
+  });
+
+  test("merge histograms with multiple bin sizes", function() {
+    var a = {
+      bins: [[100, 200], [200, 400], [300, 500]],
+      binSize: 10
+    };
+    var b = {
+      bins: [[100, 500], [200, 300], [300, 100]],
+      binSize: 100
+    };
+    var expectedHistogram = {
+      bins: [
+        [105, 200], [150, 500], [205, 400],
+        [250, 300], [305, 500], [350, 100]
+      ],
+      binSize: 25
+    };
+
+    var mergedHistogram = HistoUtils.merge([a, b]);
+    assert.deepEqual(mergedHistogram, expectedHistogram);
+  });
 });
 
 suite('HistoUtils.getPercentiles', function() {

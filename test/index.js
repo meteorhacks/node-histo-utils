@@ -105,7 +105,7 @@ suite('HistoUtils.getPercentiles', function() {
       binSize: 100
     };
     var percentiles = HistoUtils.getPercentiles(histogram, [50]);
-    assert.deepEqual(percentiles, {"50": 200});
+    assert.deepEqual(percentiles, {"50": 250});
   });
 
   test('get multiple percentile', function() {
@@ -115,18 +115,18 @@ suite('HistoUtils.getPercentiles', function() {
     };
     var percentiles = HistoUtils.getPercentiles(histogram, [50, 95, 99]);
     assert.deepEqual(percentiles, {
-      "50": 200,
-      "95": 300,
-      "99": 400
+      "50": 250,
+      "95": 362.5,
+      "99": 450
     });
   });
 
-  test('duplicated bins', function() {
+  test('no perBin calculation', function() {
     var histogram = {
-      bins: [[100, 10], [100, 45], [200, 45]],
+      bins: [[100, 200], [200, 400], [400, 200]],
       binSize: 100
     };
-    var percentiles = HistoUtils.getPercentiles(histogram, [50, 60]);
-    assert.deepEqual(percentiles, {"50": 100, "60": 200});
+    var percentiles = HistoUtils.getPercentiles(histogram, [50], true);
+    assert.deepEqual(percentiles, {"50": 200});
   });
 });

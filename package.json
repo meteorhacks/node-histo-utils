@@ -1,6 +1,6 @@
 {
   "name": "histo-utils",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A set of utilities to create, merge and manage histograms",
   "repository": "https://github.com/meteorhacks/histo-utils",
   "main": "./lib/index.js",
